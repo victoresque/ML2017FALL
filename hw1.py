@@ -2,11 +2,14 @@ import pandas as pd
 import numpy as np
 from param import *
 from util import *
+import sys
 
-test_X = to_homogeneous(flatten(extract(load_test_data())))
+input_path = sys.argv[1]
+output_path = sys.argv[2]
 
-w = load_w()
+test_X = transform(load_test_data(input_path))
+w = load_w('result/w.csv')
 test_y = np.dot(w, test_X.T)
 
 pd.DataFrame([['id_'+str(i), test_y[0][i]] for i in range(test_X.shape[0])],
-             columns=['id', 'value']).to_csv('result/result.csv', index=False)
+             columns=['id', 'value']).to_csv(output_path, index=False)

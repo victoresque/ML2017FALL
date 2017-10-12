@@ -1,5 +1,6 @@
 import numpy as np
-from param import *
+import pandas as pd
+from param_best import *
 
 def rms(x):
     return np.sqrt(np.mean(np.square(x)))
@@ -9,6 +10,20 @@ def rmse(x, y):
 
 def gradient(w, X, y, reg=0):
     return np.sum(2 * np.dot(y - np.dot(w, X.T), -X), axis=0) + 2 * reg * w
+
+def load_w(w_path):
+    return pd.read_csv(w_path, header=None).values.T
+
+def load_test_data(test_path):
+    test_data = pd.read_csv(test_path, header=None).replace('NR', '0').as_matrix()
+    n_rows = test_data.shape[0] // n_categories
+    test_X = np.zeros((0, x_len))
+    for i in range(n_rows):
+        td = np.zeros((1, 0))
+        for cat in categories:
+            td = np.append(td, test_data[i * n_categories + cat, -feature_len:])
+        test_X = np.append(test_X, [td.flatten().astype(np.float)], axis=0)
+    return test_X.astype(np.float)
 
 # Feature scaling, bugged
 def feature_scaling(X):
