@@ -8,7 +8,7 @@ input_path = sys.argv[1]
 output_path = sys.argv[2]
 
 test_X = transform(load_test_data(input_path))
-w = load_w('result/w.csv')
+w = load_w('model/w.csv')
 test_y = np.dot(w, test_X.T)
 
 pd.DataFrame([['id_'+str(i), test_y[0][i]] for i in range(test_X.shape[0])],

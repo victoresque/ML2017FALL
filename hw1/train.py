@@ -53,7 +53,7 @@ for i in range(n_valid):
           .to_csv(os.path.join(result_path, 'result.csv'), index=False)
 
     pd.DataFrame(w.T)\
-      .to_csv(os.path.join(result_path, 'w.csv'), header=None, index=False)
+      .to_csv('model/w.csv', header=None, index=False)
 
     if not local_valid:
         break
