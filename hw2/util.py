@@ -11,7 +11,7 @@ def load_test_data(X_path):
     return X_test
 
 def save_prediction(y, prediction_path):
-    pd.DataFrame([['id_' + str(i+1), y[i][0]] for i in range(y.shape[0])], columns=['id', 'label']) \
+    pd.DataFrame([[i+1, int(y[i][0])] for i in range(y.shape[0])], columns=['id', 'label']) \
         .to_csv(prediction_path, index=False)
 
 def MultivariateGaussian(miu, cov, x):
