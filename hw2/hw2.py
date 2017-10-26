@@ -1,4 +1,5 @@
 import sys
+from util import *
 
 [method,
  raw_data_path,
@@ -7,6 +8,8 @@ import sys
  train_label_path,
  test_feature_path,
  result_path] = sys.argv[1:8]
+
+X_test = load_test_data(test_feature_path)
 
 if method == 'logistic':
     pass
