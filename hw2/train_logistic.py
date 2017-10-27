@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 from util import *
+from test import *
 
 X_train, y_train = load_train_data('data/X_train.csv', 'data/y_train.csv')
 X_test = load_test_data('data/X_test.csv')
@@ -25,12 +26,8 @@ def train_logistic():
         w += eta0 * gradient
     return w
 
-def test_logistic(w):
-    y_test = (sigmoid(np.dot(X_test, w.reshape((-1, 1)))) > 0.5).astype(int)
-    save_prediction(y_test, 'result/prediction.csv')
-
 w = train_logistic()
 pickle.dump(w, open('model/logistic.pkl', 'wb'))
 
 w = pickle.load(open('model/logistic.pkl', 'rb'))
-test_logistic(w)
+test_logistic(w, X_test, 'result/prediction.csv')

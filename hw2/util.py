@@ -24,4 +24,3 @@ def StandardScale(X_train, X_test):
     mean = np.mean(X_train, axis=0).reshape((1, -1))
     std = np.std(X_train, axis=0).reshape((1, -1))
     return ((X_train - mean) / std), ((X_test - mean) / std)
-

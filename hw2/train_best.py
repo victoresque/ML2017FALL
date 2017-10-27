@@ -19,7 +19,7 @@ if valid:
     X_valid = data_train[:n//v, :-1]
     y_valid = data_train[:n//v, -1:]
 
-clf = AdaBoostClassifier(n_estimators=5000)
+clf = AdaBoostClassifier(n_estimators=1000)
 clf.fit(X_train, y_train.flatten())
 y_predict = clf.predict(X_train)
 print(accuracy_score(y_train, y_predict))
