@@ -22,6 +22,3 @@ elif method == 'logistic':
     X_train, X_test = StandardScale(X_train, X_test)
     w = pickle.load(open('model/logistic.pkl', 'rb'))
     test_logistic(w, X_test, result_path)
-elif method == 'best':
-    clf = joblib.load('model/AdaBoost.pkl')
-    test_best(clf, X_test, result_path)
