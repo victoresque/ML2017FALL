@@ -1,7 +1,5 @@
 import pickle
-from sklearn.externals import joblib
 from util import *
-
 
 def test_generative(u_0, u_1, cov, N_0, N_1, X_test, result_path):
     x = X_test.T
@@ -15,8 +13,4 @@ def test_generative(u_0, u_1, cov, N_0, N_1, X_test, result_path):
 def test_logistic(w, X_test, result_path):
     X_test = to_homogeneous(X_test)
     y_test = (sigmoid(np.dot(X_test, w.reshape((-1, 1)))) > 0.5).astype(int)
-    save_prediction(y_test, result_path)
-
-def test_best(clf, X_test, result_path):
-    y_test = clf.predict(X_test).reshape((-1, 1))
     save_prediction(y_test, result_path)

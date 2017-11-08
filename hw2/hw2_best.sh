@@ -1,2 +1,2 @@
 #!/bin/bash 
-python hw2.py best $1 $2 $3 $4 $5 $6
+python hw2_best.py best $1 $2 $3 $4 $5 $6
