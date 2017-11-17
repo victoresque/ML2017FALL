@@ -8,9 +8,6 @@ from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, ZeroPadding2D
 from keras.preprocessing.image import ImageDataGenerator
 from param import *
 from util import *
-
-from keras.utils import plot_model
-
 train_data_path = sys.argv[1]
 
 raw = pd.read_csv(train_data_path)
@@ -57,7 +54,6 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 model.summary()
-plot_model(model, to_file='model.png')
 
 if valid:
     model.fit_generator(gen.flow(X_train, y_train, batch_size=batch_size),
