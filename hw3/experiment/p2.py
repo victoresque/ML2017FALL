@@ -11,9 +11,11 @@ for line in f:
         acc.append(float(line[72:78]))
         val_acc.append(float(line[109:115]))
 
-plt.plot(list(np.arange(1, 201, 1)), acc, '-', val_acc, '-')
+l_tra, = plt.plot(list(np.arange(1, 201, 1)), acc, '-', label='training')
+l_val, = plt.plot(list(np.arange(1, 201, 1)), val_acc, '-', label='validation')
 plt.title('Training procedure')
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.axis([0, 200, 0, 1])
+plt.legend([l_tra, l_val], ['training', 'validation'], loc=1)
 plt.show()

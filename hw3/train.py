@@ -1,6 +1,7 @@
 import numpy as np
+import pandas as pd
 import keras
-from keras.datasets import mnist
+import sys
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, ZeroPadding2D
@@ -10,8 +11,13 @@ from util import *
 
 from keras.utils import plot_model
 
-X_train, y_train = train_data('data/X_train.npy', 'data/y_train.npy')
-# = facial_extract(X_train)
+train_data_path = sys.argv[1]
+
+raw = pd.read_csv(train_data_path)
+X_train = raw['feature'].values
+X_train = np.array([[int(i) for i in x.split()] for x in X_train]).astype(np.float32)
+y_train = raw['label'].values
+X_train, y_train = train_data(X_train, y_train)
 
 gen = ImageDataGenerator(
     width_shift_range=0.15,
@@ -51,7 +57,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 model.summary()
-plot_model(model, to_file='model/model.png')
+plot_model(model, to_file='model.png')
 
 if valid:
     model.fit_generator(gen.flow(X_train, y_train, batch_size=batch_size),
@@ -59,7 +65,7 @@ if valid:
 else:
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1)
 
-model.save('model/cnn.h5')
+model.save('cnn.h5')
 
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test accuracy:', score[1])

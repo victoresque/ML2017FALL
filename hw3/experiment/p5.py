@@ -33,7 +33,7 @@ def normalize(x):
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
 
 model = load_model('../model/0.67623.h5')
-id = 6999
+id = 987
 X_test = np.load('../data/X_test.npy') / 255
 X_test = X_test.reshape(X_test.shape[0], img_width, img_height)
 img = X_test[id]
@@ -71,11 +71,11 @@ nb_filter = filters.shape[0]
 print(nb_filter)
 for i in range(nb_filter):
     ax = fig.add_subplot(nb_filter/16,16,i+1)
-    ax.imshow(filters[i,:,:,0],cmap='PuBuGn')
+    ax.imshow(filters[i,:,:,0],cmap='plasma')
     plt.xticks(np.array([]))
     plt.yticks(np.array([]))
     plt.tight_layout()
-fig.suptitle('Filters of layer {} (# Ascent Epoch 64)'.format('conv_4'))
+fig.suptitle('Filters of layer {} (# Ascent Epoch 64)'.format('conv2d_4'))
 plt.tight_layout()
 plt.show()
 
@@ -89,11 +89,11 @@ for cnt, fn in enumerate(collect_layers):
     nb_filter = im[0].shape[3]
     for i in range(64):
         ax = fig.add_subplot(nb_filter/16,16,i+1)
-        ax.imshow(im[0][0,:,:,i],cmap='PuBuGn')
+        ax.imshow(im[0][0,:,:,i],cmap='plasma')
         plt.xticks(np.array([]))
         plt.yticks(np.array([]))
         plt.tight_layout()
-    fig.suptitle('Output of layer {} (Given image{})'.format('conv_4', id))
+    fig.suptitle('Output of layer {} (Given image{})'.format('conv2d_4', id))
     plt.tight_layout()
     plt.show()
 
