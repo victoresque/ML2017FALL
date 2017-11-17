@@ -3,8 +3,6 @@ import keras
 import os
 from param import *
 
-from PIL import Image
-
 def train_data(X, y):
     X_train = X / 255
     X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
