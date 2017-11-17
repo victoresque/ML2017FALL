@@ -9,7 +9,7 @@ from param import *
 
 model = load_model('../model/0.67623.h5')
 
-id = 987
+id = 13
 X_test = np.load('../data/X_test.npy') / 255
 X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols)
 img = X_test[id]
