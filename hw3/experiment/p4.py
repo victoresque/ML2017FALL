@@ -10,7 +10,6 @@ from param import *
 model = load_model('../model/0.67623.h5')
 
 id = 987
-
 X_test = np.load('../data/X_test.npy') / 255
 X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols)
 img = X_test[id]
@@ -27,7 +26,6 @@ pred = model.predict(img).argmax(axis=-1)
 target = K.mean(model.output[:, pred])
 grads = K.gradients(target, input_img)[0]
 
-class_weights = model.layers[-1].get_weights()[0]
 layer_dict = dict([(layer.name, layer) for layer in model.layers])
 target_layer = layer_dict['dense_3']
 fn = K.function([input_img, K.learning_phase()], [grads])
