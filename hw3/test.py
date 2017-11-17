@@ -2,11 +2,9 @@ import numpy as np
 import pandas as pd
 import keras
 from keras.models import load_model
+from param import *
 
 model = load_model('model/cnn.h5')
-
-num_classes = 7
-img_rows, img_cols = 48, 48
 
 X_test = np.load('data/X_test.npy')
 

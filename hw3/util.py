@@ -1,13 +1,14 @@
 import numpy as np
 import keras
+import os
 from param import *
 
 from PIL import Image
 
-def train_data():
-    X_train = np.load('data/X_train.npy')/255
+def train_data(X, y):
+    X_train = np.load(X)/255
     X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
-    y_train = np.load('data/y_train.npy')
+    y_train = np.load(y)
     y_train = keras.utils.to_categorical(y_train, num_classes)
     return X_train, y_train
 

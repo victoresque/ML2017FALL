@@ -10,7 +10,7 @@ from util import *
 
 from keras.utils import plot_model
 
-X_train, y_train = train_data('data/X_train.npy', 'data/y_train.npy')
+X_train, y_train = train_data()
 # = facial_extract(X_train)
 
 gen = ImageDataGenerator(
@@ -28,7 +28,7 @@ if valid:
 input_shape = (X_train.shape[1], X_train.shape[2], 1)
 
 model = Sequential()
-model.add(Conv2D(64, (3, 3), activation='relu', padding='same', input_shape=input_shape))
+model.add(Conv2D(64, (3, 3), activation='relu', padding='same', input_shape=(X_train.shape[1], X_train.shape[2], 1)))
 model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
