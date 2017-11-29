@@ -55,7 +55,7 @@ def convertInlineDuplicates(lines, minfreq=64):
             if freq[w] > minfreq: continue
             w1 = re.sub(r'(([a-z])\2{2,})', r'\g<2>', w)  # repeated 3+ times, replace by 1
             w2 = re.sub(r'(([a-z])\2{2,})', r'\g<2>\g<2>', w) # repeated 3+ times, replace by 2
-            w3 = re.sub(r'(([a-z])\2{1,})', r'\g<2>', w) # repeated 2+ times, replace by 1
+            w3 = re.sub(r'(([a-z])\2+)', r'\g<2>', w) # repeated 2+ times, replace by 1
             f0, f1, f2, f3 = freq.get(w,0), freq.get(w1,0), freq.get(w2,0), freq.get(w3,0)
             fm = max(f0, f1, f2, f3)
             if fm == f0:   pass
@@ -133,7 +133,7 @@ def preprocessLines(lines):
 # TODO: remove empty lines
 
 def readData(path, label=True):
-    print('  Loading data...')
+    print('  Loading', path+'...')
     _lines, _labels = [], []
     with open(path, 'r', encoding='utf_8') as f:
         for line in f:

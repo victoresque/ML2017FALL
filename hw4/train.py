@@ -1,17 +1,18 @@
 import numpy as np
+from gensim.models.word2vec import Word2Vec
 from util import *
 from param import *
 
 print('Loading and preprocessing data...')
 lines, labels = readData('data/training_label.txt')
-lines = preprocessLines(lines)
+pre_lines = readData('data/pre_training_nolabel.txt', label=False)
+lines = pre_lines[:len(lines)]
 
-dictionary = getDictionary(lines)
-print('Dictionary size:', len(dictionary))
-lines = transformByDictionary(lines, dictionary)
 x_valid, y_valid = lines[:len(lines)//v], labels[:len(lines)//v]
 x_train, y_train = lines[len(lines)//v:], labels[len(lines)//v:]
 
+print(x_train[0])
+print(x_valid[0])
 
 from keras.preprocessing import sequence
 from keras.models import Sequential
