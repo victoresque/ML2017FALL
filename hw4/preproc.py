@@ -1,13 +1,19 @@
 from util import *
+from param import *
 
+print('Loading data...')
 lines, labels = readData('data/training_label.txt')
-lines = [removeCommonWords(line) for line in lines]
-lines, dictionary = getDictionaryAndTransform(lines)
+lines2 = readData('data/training_nolabel.txt', label=False)
+for s in lines2:
+    lines.append(s)
+    
+print(len(lines))
 
-print(len(dictionary))
+print('Preprocessing data...')
+lines = preprocessLines(lines)
+dictionary = getDictionary(lines)
+print('Dictionary size:', len(dictionary))
 
-maxlen = 0
-for line in lines:
-    maxlen = max(len(line), maxlen)
-
-print(maxlen)
+with open('data/pre_training_label.txt', 'w') as f:
+    for line in lines:
+        f.write(' '.join(line)+'\n')
