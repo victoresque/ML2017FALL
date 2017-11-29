@@ -1,27 +1,26 @@
 import numpy as np
-from keras.preprocessing import sequence
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional
 from util import *
 from param import *
 
+print('Loading and preprocessing data...')
 lines, labels = readData('data/training_label.txt')
-lines, dictionary = getDictionaryAndTransform(lines)
+lines = preprocessLines(lines)
 
-print('Loading data...')
-x_test = lines[:len(lines)//v]
-y_test = labels[:len(lines)//v]
-x_train = lines[len(lines)//v:]
-y_train = labels[len(lines)//v:]
+dictionary = getDictionary(lines)
+print('Dictionary size:', len(dictionary))
+lines = transformByDictionary(lines, dictionary)
+x_valid, y_valid = lines[:len(lines)//v], labels[:len(lines)//v]
+x_train, y_train = lines[len(lines)//v:], labels[len(lines)//v:]
 
-print(len(x_train), 'train sequences')
-print(len(x_test), 'test sequences')
+
+from keras.preprocessing import sequence
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional
+print('(train, test) =', len(x_train), len(x_valid))
 x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
-x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
-print('x_train shape:', x_train.shape)
-print('x_test shape:', x_test.shape)
+x_valid = sequence.pad_sequences(x_valid, maxlen=maxlen)
 y_train = np.array(y_train)
-y_test = np.array(y_test)
+y_valid = np.array(y_valid)
 
 model = Sequential()
 model.add(Embedding(max_features, 128))
@@ -33,8 +32,6 @@ model.summary()
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
-          validation_data=[x_test, y_test])
+          validation_data=[x_valid, y_valid])
 
 model.save('rnn_0.h5')
-
-#lines_nolabel = readData('data/training_nolabel.txt', label=False)
