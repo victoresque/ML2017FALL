@@ -1,20 +1,23 @@
 import numpy as np
-from keras.preprocessing import sequence
-from keras.models import load_model
 from gensim.models.word2vec import Word2Vec
 from util import *
 from param import *
 
-model = load_model('rnn_simple.h5')
-
-lines, labels = readData('data/training_label.txt')
-w2v = Word2Vec.load('data/word2vec.mdl')
-
 lines = readTestData('data/testing_data.txt')
+print('Preprocessing data...')
+print('  Preprocessing...')
 lines = preprocessLines(lines)
-lines = transformByDictionary(lines, dictionary)
+print('  Padding lines...')
+lines = padLines(lines, '_', maxlen)
+print('  Transforming to word vectors...')
+w2v = Word2Vec.load('data/word2vec.pkl')
+transformByWord2Vec(lines, w2v)
 
-x_test = sequence.pad_sequences(lines, maxlen=maxlen)
+print('Testing...')
+from keras.models import load_model
+
+model = load_model('rnn_0_semi.h5')
+x_test = lines
 y = model.predict(x_test, verbose=True).flatten()
 y = np.array([int(i > 0.5) for i in y])
 savePrediction(y, 'result/prediction.csv')

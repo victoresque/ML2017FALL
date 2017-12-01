@@ -20,31 +20,44 @@ def removeAccents(lines):
 
 def removePunctuations(lines):
     print('  Removing punctuations...')
+    punctuations = '\"#$%&\'()*+,-/:;<=>@[\]_`{|}~'
     for i, s in enumerate(lines):
-        s = [''.join(c for c in w if c not in string.punctuation) for w in s]
+        s = [''.join(c for c in w if c not in punctuations) for w in s]
         lines[i] = [w for w in s if w]
+    for i, s in enumerate(lines):
+        for j, w in enumerate(s):
+            excCnt, queCnt, dotCnt = w.count('!'), w.count('?'), w.count('.')
+            if queCnt:        s[j] = '_?'
+            elif dotCnt >= 3: s[j] = '_...'
+            elif excCnt >= 5: s[j] = '_!!!'
+            elif excCnt >= 3: s[j] = '_!!'
+            elif excCnt >= 1: s[j] = '_!'
+        lines[i] = s
 
 def removeNotWords(lines):
     print('  Removing not words...')
     for i, s in enumerate(lines):
-        lines[i] = [w for w in s if w.isalpha()]
+        for j, w in enumerate(s):
+            if w[0] == '_': continue
+            if w == '2':          s[j] = 'to'
+            elif w.isnumeric():   s[j] = '_n'
+            elif not w.isalpha(): s[j] = '_r'
+        lines[i] = s
 
-def convertTailDuplicates(lines, minfreq=64):
+def convertTailDuplicates(lines):
     print('  Converting tail duplicates...')
     freq = getFrequencyDict(lines)
     for i, s in enumerate(lines):
         for j, w in enumerate(s):
-            if freq[w] > minfreq: continue
-            s[j] = re.sub(r'(([a-z])\2{2,})$', r'\g<2>', w, 1)
+            s[j] = re.sub(r'(([a-dg-kmnp-rt-z])\2+)$', r'\g<2>', w)
         lines[i] = s
 
-def convertHeadDuplicates(lines, minfreq=64):
+def convertHeadDuplicates(lines):
     print('  Converting head duplicates...')
     freq = getFrequencyDict(lines)
     for i, s in enumerate(lines):
         for j, w in enumerate(s):
-            if freq[w] > minfreq: continue
-            s[j] = re.sub(r'^(([a-z])\2{2,})', r'\g<2>', w, 1)
+            s[j] = re.sub(r'^(([a-z])\2+)', r'\g<2>', w)
         lines[i] = s
 
 def convertInlineDuplicates(lines, minfreq=64):
@@ -71,17 +84,20 @@ def convertSlang(lines):
         for j, w in enumerate(s):
             if w == 'u': lines[i][j] = 'you'
             w1 = re.sub(r'in$', r'ing', w)
-            f0, f1 = freq.get(w,0), freq.get(w1,0)
-            fm = max(f0, f1)
+            w2 = re.sub(r'n$', r'ing', w)
+            f0, f1, f2 = freq.get(w,0), freq.get(w1,0), freq.get(w2,0)
+            fm = max(f0, f1, f2)
             if fm == f0:   pass
-            else:          s[j] = w1
+            elif fm == f1: s[j] = w1;
+            else:          s[j] = w2;
         lines[i] = s
 
-def convertSingular(lines):
+def convertSingular(lines, minfreq=512):
     print('  Converting singular form...')
     freq = getFrequencyDict(lines)
     for i, s in enumerate(lines):
         for j, w in enumerate(s):
+            if freq[w] > minfreq: continue
             w1 = re.sub(r's$', r'', w)
             w2 = re.sub(r'es$', r'', w)
             w3 = re.sub(r'ies$', r'y', w)
@@ -92,13 +108,6 @@ def convertSingular(lines):
             elif fm == f2: s[j] = w2; 
             else:          s[j] = w3; 
         lines[i] = s
-
-def convertSameWords(lines):
-    convertTailDuplicates(lines)
-    convertHeadDuplicates(lines)
-    convertInlineDuplicates(lines)
-    convertSlang(lines)
-    convertSingular(lines)
 
 def convertRareWords(lines, minfreq=32):
     print('  Converting rare words...')
@@ -111,26 +120,34 @@ def convertRareWords(lines, minfreq=32):
 
 def convertCommonWords(lines):
     print('  Converting common words...')
-    beverbs = set('is was are were am s'.split())
-    articles = set('a an the'.split())
-    preps = set('to for of in at on by'.split())
+    #beverbs = set('is was are were am s'.split())
+    #articles = set('a an the'.split())
+    #preps = set('to for of in at on by'.split())
 
     for i, s in enumerate(lines):
-        s = [word if word not in beverbs else '_b' for word in s]
-        s = [word if word not in articles else '_a' for word in s]
-        s = [word if word not in preps else '_p' for word in s]
+        #s = [word if word not in beverbs else '_b' for word in s]
+        #s = [word if word not in articles else '_a' for word in s]
+        #s = [word if word not in preps else '_p' for word in s]
         lines[i] = s
+
+def convertPadding(lines):
+    print('  Padding...')
+    for i, s in enumerate(lines):
+        lines[i] = ['_'] + s
 
 def preprocessLines(lines):
     removeAccents(lines)
     removePunctuations(lines)
     removeNotWords(lines)
-    convertSameWords(lines)
-    convertRareWords(lines, minfreq=32)
+    convertTailDuplicates(lines)
+    convertHeadDuplicates(lines)
+    convertInlineDuplicates(lines, minfreq=len(lines)//5468)
+    convertSlang(lines)
+    convertSingular(lines, minfreq=len(lines)//2693)
+    convertRareWords(lines, minfreq=len(lines)//21875)
     convertCommonWords(lines)
+    convertPadding(lines)
     return lines
-
-# TODO: remove empty lines
 
 def readData(path, label=True):
     print('  Loading', path+'...')
@@ -146,6 +163,15 @@ def readData(path, label=True):
     if label: return _lines, _labels
     else:     return _lines
 
+def padLines(lines, value, maxlen):
+    maxlinelen = 0
+    for i, s in enumerate(lines):
+        maxlinelen = max(len(s), maxlinelen)
+    maxlinelen = max(maxlinelen, maxlen)
+    for i, s in enumerate(lines):
+        lines[i] = (['_'] * max(0, maxlinelen - len(s)) + s)[-maxlen:]
+    return lines
+
 def getDictionary(lines):
     _dict = {}
     for s in lines:
@@ -159,6 +185,14 @@ def transformByDictionary(lines, dictionary):
         for j, w in enumerate(s):
             if w in dictionary: lines[i][j] = dictionary[w]
             else:               lines[i][j] = dictionary['']
+
+def transformByWord2Vec(lines, w2v):
+    for i, s in enumerate(lines):
+        for j, w in enumerate(s):
+            if w in w2v.wv:
+                lines[i][j] = w2v.wv[w]
+            else:
+                lines[i][j] = w2v.wv['_r']
 
 def readTestData(path):
     _lines = []
