@@ -19,7 +19,7 @@ transformByWord2Vec(lines, w2v)
 print('Testing...')
 from keras.models import load_model
 
-model = load_model('model.11-0.8340.h5')
+model = load_model('model.16-0.8354.h5')
 x_test = lines
 y = model.predict(x_test, verbose=True).flatten()
 y = np.array([int(i > 0.5) for i in y])

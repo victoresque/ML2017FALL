@@ -4,6 +4,17 @@ import pandas as pd
 from gensim.models.word2vec import Word2Vec
 from util import *
 
+lines = []
+with open('data/pre_training_nolabel.txt', 'r', encoding='utf_8') as f:
+    for line in f:
+        lines.append(line.split())
+maxlinelen = 0
+for line in lines:
+    if len(line) == 229:
+        print(line)
+    maxlinelen = max(maxlinelen, len(line))
+print(maxlinelen)
+
 lines, labels = readData('data/training_label.txt')
 c0, c1 = 0, 0
 for i in labels:

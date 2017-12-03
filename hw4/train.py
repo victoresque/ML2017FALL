@@ -25,9 +25,9 @@ from keras.layers import Dense, Dropout, LSTM, Bidirectional
 from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 
 model = Sequential()
-model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5, return_sequences=True,
+model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5, #return_sequences=True,
                input_shape=(maxlen, 256)))
-model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5))
+#model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5))
 model.add(Dense(1, activation='sigmoid'))
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 model.summary()
