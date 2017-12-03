@@ -7,6 +7,9 @@ lines = readTestData('data/testing_data.txt')
 print('Preprocessing data...')
 print('  Preprocessing...')
 lines = preprocessLines(lines)
+with open('data/pre_testing_nolabel.txt', 'w', encoding='utf_8') as f:
+    for line in lines:
+        f.write(' '.join(line)+'\n')
 print('  Padding lines...')
 lines = padLines(lines, '_', maxlen)
 print('  Transforming to word vectors...')
@@ -16,7 +19,7 @@ transformByWord2Vec(lines, w2v)
 print('Testing...')
 from keras.models import load_model
 
-model = load_model('rnn_0_semi.h5')
+model = load_model('model.11-0.8340.h5')
 x_test = lines
 y = model.predict(x_test, verbose=True).flatten()
 y = np.array([int(i > 0.5) for i in y])

@@ -27,5 +27,5 @@ with open('data/pre_training_nolabel.txt', 'r', encoding='utf_8') as f:
         lines.append(line.split())
 
 print('Training word2vec...')
-model = Word2Vec(lines, size=128, min_count=1, iter=16, workers=16)
+model = Word2Vec(lines, size=256, min_count=16, iter=16, workers=16)
 model.save('data/word2vec.pkl')
