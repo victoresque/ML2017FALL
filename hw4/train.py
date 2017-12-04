@@ -6,9 +6,14 @@ from param import *
 
 print('Loading data...')
 lines, labels = readData('data/training_label.txt')
-lines = readData('data/pre_training_nolabel.txt', label=False)[:len(lines)]
+lines = readData('data/pre_corpus.txt', label=False)[:len(lines)]
 
 print('Preprocessing data...')
+print('  Converting...')
+with open('data/pre_cmap.pkl', 'rb') as f:
+    cmap = pickle.load(f)
+cmapRefine(cmap)
+transformByConversionMap(lines, cmap)
 print('  Padding lines...')
 lines = padLines(lines, '_', maxlen)
 labels = np.array(labels)
@@ -25,15 +30,15 @@ from keras.layers import Dense, Dropout, LSTM, Bidirectional
 from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 
 model = Sequential()
-model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5, #return_sequences=True,
+model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5, return_sequences=True,
                input_shape=(maxlen, 256)))
-#model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5))
+model.add(LSTM(512, dropout=0.5, recurrent_dropout=0.5))
 model.add(Dense(1, activation='sigmoid'))
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 model.summary()
 
 history = History()
-chkpoint = ModelCheckpoint('model.{epoch:02d}-{val_acc:.4f}.h5',
+chkpoint = ModelCheckpoint('model.{epoch:02d}-{acc:.4f}-{val_acc:.4f}.h5',
                            monitor='val_acc',
                            save_best_only=True,
                            save_weights_only=False)

@@ -4,6 +4,17 @@ import pandas as pd
 from gensim.models.word2vec import Word2Vec
 from util import *
 
+d = {'1':1, '2':2}
+for key, value in d.items():
+    print(key, value)
+
+with open('data/pre_cmap.pkl', 'rb') as f:
+    cmap = pickle.load(f)
+print(cmap['_r'])
+cmapRefine(cmap)
+print(cmap['go2'])
+
+'''
 lines = []
 with open('data/pre_training_nolabel.txt', 'r', encoding='utf_8') as f:
     for line in f:
@@ -22,17 +33,20 @@ for i in labels:
     else: c0 += 1
 
 print(c0, c1)
+'''
 
 model = Word2Vec.load('data/word2vec.pkl')
 
 print(model.wv.most_similar(positive='_!'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='love'.split(), negative=''.split()))
+print(model.wv.most_similar(positive='like'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='microsoft'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='apple'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='windows'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='king'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='delicious'.split(), negative=''.split()))
-print(model.wv.doesnt_match('tasty delicious yum yummy good'.split()))
+print(model.wv.most_similar(positive='orange'.split(), negative=''.split()))
+print(model.wv.doesnt_match('nintendo sony microsoft google'.split()))
 
 '''
 print('Training word2vec...')
