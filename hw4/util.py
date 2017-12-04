@@ -235,11 +235,10 @@ def transformByConversionMap(lines, cmap, iter=2):
         for i, s in enumerate(lines):
             s0 = []
             for j, w in enumerate(s):
-                if w in cmap:
-                    if w[0] != '_':
-                        s0 = s0 + cmap[w].split()
-                    else:
-                        s0 = s0 + [w]
+                if w in cmap and w[0] != '_':
+                    s0 = s0 + cmap[w].split()
+                elif w[0] == '_':
+                    s0 = s0 + [w]
             lines[i] = [w for w in s0 if w]
 
 def transformByWord2Vec(lines, w2v):
