@@ -4,6 +4,11 @@ import pandas as pd
 from gensim.models.word2vec import Word2Vec
 from util import *
 
+lines = [['a', 'b', 'c'], ['a', 'b', 'a'], ['a', 'b', 'c']]
+print(lines)
+removeDuplicatedLines(lines)
+print(lines)
+
 d = {'1':1, '2':2}
 for key, value in d.items():
     print(key, value)
@@ -40,13 +45,6 @@ model = Word2Vec.load('data/word2vec.pkl')
 print(model.wv.most_similar(positive='_!'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='love'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='like'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='microsoft'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='apple'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='windows'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='king'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='delicious'.split(), negative=''.split()))
-print(model.wv.most_similar(positive='orange'.split(), negative=''.split()))
-print(model.wv.doesnt_match('nintendo sony microsoft google'.split()))
 
 '''
 print('Training word2vec...')

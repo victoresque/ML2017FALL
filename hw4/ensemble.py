@@ -9,5 +9,5 @@ p4 = pd.read_csv('result/p4.csv').values[:,1]
 p5 = pd.read_csv('result/p5.csv').values[:,1]
 
 p = p1+p2+p3+p4+p5
-y = np.array([int(i > 2) for i in p])
+y = np.array([int(i > 5//2) for i in p])
 savePrediction(y, 'result/prediction.csv')

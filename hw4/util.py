@@ -1,5 +1,6 @@
 import re
 import string
+import pickle
 import unicodedata as udata
 import numpy as np
 import pandas as pd
@@ -231,6 +232,7 @@ def transformByDictionary(lines, dictionary):
             else:               lines[i][j] = dictionary['']
 
 def transformByConversionMap(lines, cmap, iter=2):
+    cmapRefine(cmap)
     for it in range(iter):
         for i, s in enumerate(lines):
             s0 = []
@@ -263,14 +265,58 @@ def savePrediction(y, path, id_start=0):
     pd.DataFrame([[i+id_start, int(y[i])] for i in range(y.shape[0])],
                  columns=['id', 'label']).to_csv(path, index=False)
 
+def savePreprocessCorpus(lines, path):
+    with open(path, 'w', encoding='utf_8') as f:
+        for line in lines:
+            f.write(' '.join(line) + '\n')
+
+def savePreprocessCmap(cmap, path):
+    with open(path, 'wb') as f:
+        pickle.dump(cmap, f)
+
+def loadPreprocessCmap(path):
+    print('  Loading', path + '...')
+    with open(path, 'rb') as f:
+        cmap = pickle.load(f)
+    return cmap
+
+def loadPreprocessCorpus(path):
+    print('  Loading', path + '...')
+    lines = []
+    with open(path, 'r', encoding='utf_8') as f:
+        for line in f:
+            lines.append(line.split())
+    return lines
+
+def removeDuplicatedLines(lines):
+    lineset = set({})
+    for line in lines:
+        lineset.add(' '.join(line))
+    for i, line in enumerate(lineset):
+        lines[i] = line.split()
+    del lines[-(len(lines)-len(lineset)):]
+
+def shuffleData(lines, labels):
+    for i, s in enumerate(lines):
+        lines[i] = ' '.join(s)
+    for i, s in enumerate(lines):
+        lines[i] = (s, labels[i])
+    np.random.shuffle(lines)
+    for i, s in enumerate(lines):
+        labels[i] = s[1]
+        lines[i] = s[0].split()
+
 def cmapRefine(cmap):
+    cmap['likes'] = cmap['liked'] = cmap['lk'] = 'like'
+    cmap['kool'] = 'cool'
     cmap['yess'] = 'yes'
     cmap['pleasee'] = 'please'
     cmap['soo'] = 'so'
     cmap['noo'] = 'no'
     cmap['lovee'] = cmap['loove'] = cmap['looove'] = cmap['loooove'] = cmap['looooove'] \
-        = cmap['loooooove'] = cmap['loves'] = cmap['loved'] \
+        = cmap['loooooove'] = cmap['loves'] = cmap['loved'] = cmap['wuv'] \
         = cmap['loovee'] = cmap['lurve'] = cmap['lov'] = 'love'
+    cmap['ilove'] = 'i love'
     cmap['liek'] = cmap['lyk'] = cmap['lik'] = cmap['lke'] = cmap['likee'] = 'like'
     cmap['mee'] = 'me'
     cmap['hooo'] = 'hoo'
