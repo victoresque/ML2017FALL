@@ -20,18 +20,21 @@ print('  Transforming to word vector...')
 w2v = Word2Vec.load('data/word2vec.pkl')
 transformByWord2Vec(lines, w2v)
 print('  Splitting validation...')
-x_valid, y_valid = lines[:len(lines)//v], labels[:len(lines)//v]
-x_train, y_train = lines[len(lines)//v:], labels[len(lines)//v:]
+v = 20000
+x_valid, y_valid = lines[:v], labels[:v]
+x_train, y_train = lines[v:], labels[v:]
 
 print('Training...')
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM, Bidirectional, GRU
+from keras.layers import Dense, Dropout, LSTM, Bidirectional, GRU, BatchNormalization, Activation
 from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 
 model = Sequential()
-model.add(GRU(666, dropout=0.6, recurrent_dropout=0.6, return_sequences=True,
+model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5, return_sequences=True,
                input_shape=(maxlen, 256)))
-model.add(GRU(666, dropout=0.6, recurrent_dropout=0.6))
+model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5))
+model.add(Dense(512, activation='selu'))
+model.add(Dense(512, activation='selu'))
 model.add(Dense(1, activation='sigmoid'))
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 model.summary()
@@ -45,5 +48,3 @@ model.fit(x_train, y_train,
           epochs=epochs,
           callbacks=[history, chkpoint],
           validation_data=[x_valid, y_valid])
-with open('result/history.pkl', 'wb') as f:
-    pickle.dump(history.history, f)

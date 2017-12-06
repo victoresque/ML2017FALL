@@ -174,13 +174,12 @@ def convertPadding(lines, maxlen=38):
     for i, s in enumerate(lines):
         lines[i] = [w for w in s if w]
     for i, s in enumerate(lines):
-        lines[i] = ['_', '_'] + s[:maxlen]
+        lines[i] = s[:maxlen]
 
 def preprocessLines(lines):
     global original_lines
     original_lines = lines[:]
     cmap = initializeCmap(original_lines)
-
     convertAccents(lines, cmap)
     convertPunctuations(lines, cmap)
     convertNotWords(lines, cmap)
@@ -214,7 +213,7 @@ def padLines(lines, value, maxlen):
         maxlinelen = max(len(s), maxlinelen)
     maxlinelen = max(maxlinelen, maxlen)
     for i, s in enumerate(lines):
-        lines[i] = (['_'] * max(0, maxlinelen - len(s)) + s)[-maxlen:]
+        lines[i] = (['_r'] * max(0, maxlinelen - len(s)) + s)[-maxlen:]
     return lines
 
 def getDictionary(lines):
@@ -249,7 +248,7 @@ def transformByWord2Vec(lines, w2v):
             if w in w2v.wv:
                 lines[i][j] = w2v.wv[w]
             else:
-                lines[i][j] = w2v.wv['_']
+                lines[i][j] = w2v.wv['_r']
 
 def readTestData(path):
     print('  Loading', path + '...')
@@ -295,19 +294,21 @@ def removeDuplicatedLines(lines):
     for i, line in enumerate(lineset):
         lines[i] = line.split()
     del lines[-(len(lines)-len(lineset)):]
+    return lineset
 
 def shuffleData(lines, labels):
-    for i, s in enumerate(lines):
-        lines[i] = ' '.join(s)
     for i, s in enumerate(lines):
         lines[i] = (s, labels[i])
     np.random.shuffle(lines)
     for i, s in enumerate(lines):
         labels[i] = s[1]
-        lines[i] = s[0].split()
+        lines[i] = s[0]
 
 def cmapRefine(cmap):
+    cmap['teh'] = cmap['da'] = cmap['tha'] = 'the'
+    cmap['evar'] = 'ever'
     cmap['likes'] = cmap['liked'] = cmap['lk'] = 'like'
+    cmap['wierd'] = 'weird'
     cmap['kool'] = 'cool'
     cmap['yess'] = 'yes'
     cmap['pleasee'] = 'please'
@@ -315,7 +316,9 @@ def cmapRefine(cmap):
     cmap['noo'] = 'no'
     cmap['lovee'] = cmap['loove'] = cmap['looove'] = cmap['loooove'] = cmap['looooove'] \
         = cmap['loooooove'] = cmap['loves'] = cmap['loved'] = cmap['wuv'] \
-        = cmap['loovee'] = cmap['lurve'] = cmap['lov'] = 'love'
+        = cmap['loovee'] = cmap['lurve'] = cmap['lov'] = cmap['luvs'] = 'love'
+    cmap['lovelove'] = 'love love'
+    cmap['lovelovelove'] = 'love love love'
     cmap['ilove'] = 'i love'
     cmap['liek'] = cmap['lyk'] = cmap['lik'] = cmap['lke'] = cmap['likee'] = 'like'
     cmap['mee'] = 'me'
@@ -347,9 +350,8 @@ def cmapRefine(cmap):
     cmap['mrng'] = 'morning'
     cmap['gd'] = 'good'
     cmap['thx'] = cmap['thnx'] = cmap['thanx'] = cmap['thankx'] = cmap['thnk'] = 'thanks'
-    cmap['ur'] = 'your'
     cmap['jaja'] = cmap['jajaja'] = cmap['jajajaja'] = 'haha'
-    cmap['eff'] = cmap['ef'] = cmap['f'] = cmap['fk'] = cmap['fuk'] = cmap['fuc'] = 'fuck'
+    cmap['eff'] = cmap['fk'] = cmap['fuk'] = cmap['fuc'] = 'fuck'
     cmap['2moro'] = cmap['2mrow'] = cmap['2morow'] = cmap['2morrow'] \
         = cmap['2morro'] = cmap['2mrw'] = cmap['2moz'] = 'tomorrow'
     cmap['babee'] = 'babe'
@@ -388,9 +390,9 @@ def cmapRefine(cmap):
         = cmap['xoxoxoxo'] = cmap['xoxoxoxoxo'] = 'xoxo'
     cmap['cuz'] = cmap['bcuz'] = cmap['becuz'] = 'because'
     cmap['iz'] = 'is'
-    cmap['aint'] = 'i am not'
+    cmap['aint'] = 'am not'
     cmap['fav'] = 'favorite'
-    cmap['pl'] = 'people'
+    cmap['ppl'] = 'people'
     cmap['mah'] = 'my'
     cmap['r8'] = 'rate'
     cmap['l8'] = 'late'

@@ -1,8 +1,14 @@
 import pickle
 import string
 import pandas as pd
+import numpy as np
 from gensim.models.word2vec import Word2Vec
 from util import *
+
+s = [[1, 2], [3, 4, 5]]
+print(s)
+np.random.shuffle(s)
+print(s)
 
 lines = [['a', 'b', 'c'], ['a', 'b', 'a'], ['a', 'b', 'c']]
 print(lines)
@@ -42,7 +48,8 @@ print(c0, c1)
 
 model = Word2Vec.load('data/word2vec.pkl')
 
-print(model.wv.most_similar(positive='_!'.split(), negative=''.split()))
+print(model.wv.most_similar(positive='dont'.split(), negative=''.split()))
+print(model.wv.most_similar(positive='but'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='love'.split(), negative=''.split()))
 print(model.wv.most_similar(positive='like'.split(), negative=''.split()))
 
