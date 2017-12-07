@@ -19,32 +19,20 @@ print('Testing...')
 from keras.models import load_model
 x_test = lines
 bs = 256
-model = load_model('ensembel_best/new/m1.h5')
-y1 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m2.h5')
-y2 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m3.h5')
-y3 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m4.h5')
-y4 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m5.h5')
-y5 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m6.h5')
-y6 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m7.h5')
-y7 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m8.h5')
-y8 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
-model = load_model('ensembel_best/new/m9.h5')
-y9 = model.predict(x_test, batch_size=bs, verbose=True).flatten()
+ylist = []
+for i in range(8):
+    model = load_model('ensembel_best/new/m'+str(i+1)+'.h5')
+    ylist.append(model.predict(x_test, batch_size=bs, verbose=True).flatten())
 
 with open('result/y.pkl', 'wb') as f:
-    pickle.dump([y1, y2, y3, y4, y5, y6, y7, y8, y9], f)
+    pickle.dump(ylist, f)
 
 with open('result/y.pkl', 'rb') as f:
-    [y1, y2, y3, y4, y5, y6, y7, y8, y9] = pickle.load(f)
+    ylist = pickle.load(f)
 
-y = (y1+y2+y3+y4+y5+y6+y7+y8+y9)/9
+y = np.zeros(len(ylist[0]))
+for i, yi in enumerate(ylist):
+    y = y + yi
+y = y / 8
 y = np.array([int(i > 0.5) for i in y])
-
 savePrediction(y, 'result/prediction.csv')

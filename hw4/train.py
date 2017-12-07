@@ -19,32 +19,40 @@ labels = np.array(labels)
 print('  Transforming to word vector...')
 w2v = Word2Vec.load('data/word2vec.pkl')
 transformByWord2Vec(lines, w2v)
-print('  Splitting validation...')
-v = 20000
-x_valid, y_valid = lines[:v], labels[:v]
-x_train, y_train = lines[v:], labels[v:]
+x_train, y_train = lines, labels
 
 print('Training...')
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM, Bidirectional, GRU, BatchNormalization, Activation
 from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 
-model = Sequential()
-model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5, return_sequences=True,
-               input_shape=(maxlen, 256)))
-model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5))
-model.add(Dense(512, activation='selu'))
-model.add(Dense(512, activation='selu'))
-model.add(Dense(1, activation='sigmoid'))
-model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
-model.summary()
 history = History()
-chkpoint = ModelCheckpoint('model.{epoch:02d}-{acc:.4f}-{val_acc:.4f}.h5',
-                           monitor='val_acc',
-                           save_best_only=False,
-                           save_weights_only=False)
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          callbacks=[history, chkpoint],
-          validation_data=[x_valid, y_valid])
+earlystop = EarlyStopping(patience=3)
+
+def train(id):
+    model = Sequential()
+    model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5, return_sequences=True,
+                  input_shape=(maxlen, 256)))
+    model.add(GRU(512, dropout=0.5, recurrent_dropout=0.5))
+    model.add(Dense(512, activation='selu'))
+    model.add(Dense(512, activation='selu'))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
+    model.summary()
+    chkpoint = ModelCheckpoint('model/m'+str(id)+'.{epoch:02d}-{acc:.3f}-{val_acc:.3f}.h5', save_best_only=False, save_weights_only=False)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1,
+              callbacks=[history, chkpoint])
+
+for i in range(8):
+    train(i+1)
+
+
+'''
+all m0
+
+m0: GRU 512 0.5 0.5 - GRU 512 0.5 0.5 - Dense 512 selu - Dense 512 selu
+m1: LSTM 512 0.5 0.5 - LSTM 512 0.5 0.5 - Dense 512 selu - Dense 512 selu 
+m2: GRU 512 0.5 - GRU 512 0.5 - Dense 512 selu - Dense 512 selu
+m3: LSTM 256 0.5 0.2 - LSTM 256 0.5 0.2 - Dense 512 selu - Dropout 0.2
+m4: GRU 256 0.5 0.2 - GRU 256 0.5 0.2 - Dense 512 selu - Dropout 0.2
+'''
