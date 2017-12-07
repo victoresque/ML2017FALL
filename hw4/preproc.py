@@ -2,7 +2,7 @@ from gensim.models.word2vec import Word2Vec
 from util import *
 from param import *
 
-def loadTestingData(path):
+def preprocessTestingData(path):
     print('Loading testing data...')
     lines = readTestData(path)
 
@@ -14,7 +14,7 @@ def loadTestingData(path):
     w2v = Word2Vec.load('model/word2vec.pkl')
     transformByWord2Vec(lines, w2v)
 
-def loadTrainingData(label_path, nolabel_path):
+def preprocessTrainingData(label_path, nolabel_path):
     print('Loading training data...')
     preprocess(label_path, nolabel_path)
 

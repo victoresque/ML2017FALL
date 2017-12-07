@@ -4,7 +4,7 @@ from keras.layers import Dense, GRU
 from preproc import *
 
 print('Loading and preprocessing data...')
-x_train, y_train = loadTrainingData('data/training_label.txt', 'data/training_nolabel.txt')
+x_train, y_train = preprocessTrainingData(sys.argv[1], sys.argv[2])
 
 print('Training...')
 model = Sequential()
