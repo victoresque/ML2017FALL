@@ -1,5 +1,5 @@
 #!/bin/bash 
-mkdir model
+mkdir -p model
 wget -O model/m1.h5 'https://www.dropbox.com/s/e1sguq88602to8k/m1.h5?dl=1'
 wget -O model/m2.h5 'https://www.dropbox.com/s/y4i677bgp7r6028/m2.h5?dl=1'
 wget -O model/m3.h5 'https://www.dropbox.com/s/e2ztfigeeosak7t/m3.h5?dl=1'
