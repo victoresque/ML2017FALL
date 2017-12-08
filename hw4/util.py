@@ -287,6 +287,14 @@ def loadPreprocessCorpus(path):
             lines.append(line.split())
     return lines
 
+def removePunctuations(lines):
+    rs = {'_!', '_!!', '_!!!', '_.', '_...', '_?'}
+    for i, s in enumerate(lines):
+        for j, w in enumerate(s):
+            if w in rs:
+                s[j] = ''
+        lines[i] = [w for w in x if w]
+
 def removeDuplicatedLines(lines):
     lineset = set({})
     for line in lines:
