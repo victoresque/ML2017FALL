@@ -38,8 +38,8 @@ Users = np.array(Users)
 Movies = np.array(Movies)
 
 model = MFModel(max_userid, max_movieid, 100)
-model.load_weights('model_0.6064.h5')
+model.load_weights('model_0.6096.h5')
 
 y = model.predict([Users, Movies], batch_size=512, verbose=1).flatten()
-y = (y * std) + mean
+y = (y * std) + mean + (np.random.rand(len(y))-0.5)/200
 savePrediction(y, 'result/prediction.csv')

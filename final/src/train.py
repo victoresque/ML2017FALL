@@ -1,80 +1,54 @@
-# from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import division
-
-import importlib
-from keras import backend as K
-import os
-os.environ['KERAS_BACKEND'] = 'theano'
-importlib.reload(K)
-
+import pickle
 import numpy as np
-import argparse
+from tqdm import tqdm
 
-import keras
-from keras.callbacks import ModelCheckpoint
+with open('data/train.pkl', 'rb') as f:
+    train_data = pickle.load(f)
 
-from model import RNet
-from data_util import BatchGen, load_dataset
+p_minlen = 1000     # 121
+p_maxlen = 0        # 603
+q_minlen = 1000     # 4
+q_maxlen = 0        # 36
+for data in train_data:
+    p_maxlen = max(p_maxlen, len(data['context']))
+    p_minlen = min(p_minlen, len(data['context']))
+    q_maxlen = max(q_maxlen, len(data['question']))
+    q_minlen = min(q_minlen, len(data['question']))
 
-import sys
-sys.setrecursionlimit(100000)
+P = []
+Q = []
+ans_st = []
+ans_ed = []
+for i, data in tqdm(enumerate(train_data)):
+    p = data['context']
+    q = data['question']
+    P.append(([np.zeros((300,))] * (p_maxlen - len(p))) + p)
+    Q.append(([np.zeros((300,))] * (q_maxlen - len(q))) + q)
+    p_offset = data['context_offset']
+    ans_st_ = data['ans_st']
+    ans_ed_ = data['ans_ed']
+    offsum = 0
+    for j, off in enumerate(p_offset):
+        if ans_st_ <= offsum+off:
+            ans_st.append(j + (p_maxlen - len(p)))
+            break
+        offsum += off
+    offsum = 0
+    for j, off in enumerate(p_offset):
+        offsum += off
+        if ans_ed_ <= offsum:
+            ans_ed.append(min(p_maxlen, j + 1 + (p_maxlen - len(p))))
+            break
 
-np.random.seed(10)
+del train_data
+P = np.array(P)
+Q = np.array(Q)
+ans_st = np.array(ans_st)
+ans_ed = np.array(ans_ed)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--hdim', default=75, help='Model to evaluate', type=int)
-parser.add_argument('--batch_size', default=70, help='Batch size', type=int)
-parser.add_argument('--nb_epochs', default=50, help='Number of Epochs', type=int)
-parser.add_argument('--optimizer', default='Adadelta', help='Optimizer', type=str)
-parser.add_argument('--lr', default=None, help='Learning rate', type=float)
-parser.add_argument('--name', default='', help='Model dump name prefix', type=str)
-parser.add_argument('--loss', default='categorical_crossentropy', help='Loss', type=str)
+from model import *
+model = QA(p_maxlen, q_maxlen)
+model.compile(loss='mse', optimizer='adam')
+model.summary()
 
-parser.add_argument('--dropout', default=0, type=float)
-parser.add_argument('--char_level_embeddings', action='store_true')
-
-parser.add_argument('--train_data', default='data/train_data.pkl', help='Train Set', type=str)
-parser.add_argument('--valid_data', default='data/valid_data.pkl', help='Validation Set', type=str)
-
-# parser.add_argument('model', help='Model to evaluate', type=str)
-args = parser.parse_args()
-
-print('Creating the model...', end='')
-model = RNet(hdim=args.hdim, dropout_rate=args.dropout, N=None, M=None,
-             char_level_embeddings=args.char_level_embeddings)
-print('Done!')
-
-print('Compiling Keras model...', end='')
-optimizer_config = {'class_name': args.optimizer,
-                    'config': {'lr': args.lr} if args.lr else {}}
-model.compile(optimizer=optimizer_config,
-              loss=args.loss,
-              metrics=['accuracy'])
-print('Done!')
-
-print('Loading datasets...', end='')
-train_data = load_dataset(args.train_data)
-valid_data = load_dataset(args.valid_data)
-print('Done!')
-
-print('Preparing generators...', end='')
-maxlen = [300, 300, 30, 30] if args.char_level_embeddings else [300, 30]
-
-train_data_gen = BatchGen(*train_data, batch_size=args.batch_size, shuffle=False, group=True, maxlen=maxlen)
-valid_data_gen = BatchGen(*valid_data, batch_size=args.batch_size, shuffle=False, group=True, maxlen=maxlen)
-print('Done!')
-
-print('Training...', end='')
-
-path = 'models/' + args.name + '{epoch}-t{loss}-v{val_loss}.model'
-
-model.fit_generator(generator=train_data_gen,
-                    steps_per_epoch=train_data_gen.steps(),
-                    validation_data=valid_data_gen,
-                    validation_steps=valid_data_gen.steps(),
-                    epochs=args.nb_epochs,
-                    callbacks=[
-                        ModelCheckpoint(path, verbose=1, save_best_only=True)
-                    ])
-print('Done!')
+model.fit([P, Q], [ans_st, ans_ed], batch_size=128, epochs=30, validation_split=.1, verbose=1)
