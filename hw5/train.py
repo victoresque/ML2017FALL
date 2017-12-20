@@ -9,30 +9,52 @@ userReviews = parseReview('data/train.csv')
 max_userid = len(userDict)
 max_movieid = len(movieToGenres)
 
-model = MFModel(max_userid, max_movieid, 100)
-opt = optimizers.adamax()
-model.compile(loss='mse', optimizer=opt)
-model.summary()
-
 userReviewsList = []
 for i in range(1, max_userid+1):
     for movie, rating in userReviews[i]:
         userReviewsList.append((i, movie, rating))
 np.random.shuffle(userReviewsList)
 
-Users, Movies, Ratings = [], [], []
+Users, Movies, Ratings, Genres, Genders, Ages = [], [], [], [], [], []
 for i, movie, rating in userReviewsList:
     Users.append(i)
+    genreEncode = np.zeros((18,))
+    for i in range(18):
+        if i in movieToGenres[movie]:
+            genreEncode[i] = 1
+    Genders.append(0 if userDict[i]['gender']=='M' else 1)
+
+    ageEncode = np.zeros((7,))
+    ageid = userDict[i]['age']
+    if ageid == 1: ageEncode[0] = 1
+    elif ageid == 18: ageEncode[1] = 1
+    elif ageid == 25: ageEncode[2] = 1
+    elif ageid == 35: ageEncode[3] = 1
+    elif ageid == 45: ageEncode[4] = 1
+    elif ageid == 50: ageEncode[5] = 1
+    else: ageEncode[6] = 1
+    Ages.append(ageEncode)
+
+    Genres.append(genreEncode)
     Movies.append(movie)
     Ratings.append(rating)
 
 Users = np.array(Users)
 Movies = np.array(Movies)
 Ratings = np.array(Ratings)
+Genres = np.array(Genres)
+Genders = np.array(Genders)
+Ages = np.array(Ages)
+
 Ratings = (Ratings - np.mean(Ratings)) / np.std(Ratings) # expected mse = 0.6
 
-callbacks = [EarlyStopping('val_loss', patience=2),
-             ModelCheckpoint('model_{val_loss:.4f}.h5', save_best_only=True, save_weights_only=False)]
-model.fit([Users, Movies], Ratings, epochs=30,
+opt = optimizers.adam()
+callbacks = [EarlyStopping('val_loss', patience=4),
+             ModelCheckpoint('model{epoch:02d}_{loss:.4f}_{val_loss:.4f}.h5', save_best_only=True, save_weights_only=False)]
+
+model = MFModel(max_userid, max_movieid)
+model.compile(loss=['mse'], optimizer=opt)
+model.summary()
+model.fit([Users, Movies, Genres, Genders, Ages], [Ratings], epochs=200, batch_size=512,
           validation_split=.1, verbose=1, callbacks=callbacks)
 model.save('mf.h5')

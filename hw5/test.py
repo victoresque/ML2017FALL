@@ -25,9 +25,8 @@ for i, movie, rating in userReviewsList:
 Ratings = np.array(Ratings)
 mean = np.mean(Ratings)
 std = np.std(Ratings)
-
-print(mean)
-print(std)
+print('Rating mean:', mean)
+print('Rating std:', std)
 
 Users, Movies = [], []
 for user, movie in testData:
@@ -37,9 +36,9 @@ for user, movie in testData:
 Users = np.array(Users)
 Movies = np.array(Movies)
 
-model = MFModel(max_userid, max_movieid, 100)
-model.load_weights('model_0.6096.h5')
+model = MFModel(max_userid, max_movieid)
+model.load_weights('model_0.5941.h5')
 
 y = model.predict([Users, Movies], batch_size=512, verbose=1).flatten()
-y = (y * std) + mean + (np.random.rand(len(y))-0.5)/200
+y = (y * std) + mean
 savePrediction(y, 'result/prediction.csv')

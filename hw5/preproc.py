@@ -2,23 +2,25 @@ import pandas as pd
 
 def parseMovies(path):
     genreDict = {}
-    movieToGenres = []
-    with open(path, 'r', encoding='ISO-8859-1') as f:
+    movieToGenres = [0] * 4000
+    with open(path, 'r', encoding='latin-1') as f:
         next(f)
         for i, line in enumerate(f):
-            genres = line.split('::')[2].split('|')
+            genres = line[:-1].split('::')[2].split('|')
             for j, genre in enumerate(genres):
-                genreDict[genre] = len(genreDict)
+                if genre not in genreDict:
+                    genreDict[genre] = len(genreDict)
                 genres[j] = genreDict[genre]
-            movieToGenres.append(genres)
+            movieToGenres[int(line[:-1].split('::')[0])] = genres
+    print(genreDict)
     return movieToGenres
 
 def parseUsers(path):
     userDict = {}
-    with open(path, 'r', encoding='ISO-8859-1') as f:
+    with open(path, 'r', encoding='latin-1') as f:
         next(f)
         for i, line in enumerate(f):
-            line = line.split('::')
+            line = line[:-1].split('::')
             userid, gender, age = int(line[0]), line[1], int(line[2])
             userDict[userid] = {'gender':gender, 'age':age}
     return userDict
