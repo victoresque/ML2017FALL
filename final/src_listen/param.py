@@ -1,3 +1,0 @@
-hidden_size = 256
-INPUT_MAX_LEN = 256
-OUTPUT_MAX_LEN = 16
