@@ -1,5 +1,4 @@
 import numpy as np
-from preproc import *
 from util import *
 from model import *
 
@@ -46,15 +45,18 @@ Genres = np.array(Genres)
 Genders = np.array(Genders)
 Ages = np.array(Ages)
 
-Ratings = (Ratings - np.mean(Ratings)) / np.std(Ratings) # expected mse = 0.6
+Ratings = (Ratings - np.mean(Ratings)) / np.std(Ratings)
 
 opt = optimizers.adam()
 callbacks = [EarlyStopping('val_loss', patience=4),
              ModelCheckpoint('model{epoch:02d}_{loss:.4f}_{val_loss:.4f}.h5', save_best_only=True, save_weights_only=False)]
 
-model = MFModel(max_userid, max_movieid)
+model = MFModel(max_userid, max_movieid, d=256)
 model.compile(loss=['mse'], optimizer=opt)
 model.summary()
-model.fit([Users, Movies, Genres, Genders, Ages], [Ratings], epochs=200, batch_size=512,
-          validation_split=.1, verbose=1, callbacks=callbacks)
-model.save('mf.h5')
+
+#from keras.utils.vis_utils import plot_model
+#plot_model(model, 'model.png')
+
+model.fit([Users, Movies], [Ratings], epochs=200, batch_size=512,
+          validation_split=.02, verbose=1, callbacks=callbacks)

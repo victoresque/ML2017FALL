@@ -1,3 +1,2 @@
 #!/bin/bash 
-mkdir -p model
-python train.py $1 $2
+python test_best.py $1 $2 $3 $4

@@ -1,32 +1,13 @@
+import sys
 import numpy as np
 from util import *
-from preproc import *
 from model import *
 
-movieToGenres = parseMovies('data/movies.csv')
-userDict = parseUsers('data/users.csv')
-userReviews = parseReview('data/train.csv')
-testData = parseTesting('data/test.csv')
+movieToGenres = parseMovies(sys.argv[3])
+userDict = parseUsers(sys.argv[4])
+testData = parseTesting(sys.argv[1])
 max_userid = len(userDict)
 max_movieid = len(movieToGenres)
-
-userReviewsList = []
-for i in range(1, max_userid+1):
-    for movie, rating in userReviews[i]:
-        userReviewsList.append((i, movie, rating))
-np.random.shuffle(userReviewsList)
-
-Users, Movies, Ratings = [], [], []
-for i, movie, rating in userReviewsList:
-    Users.append(i)
-    Movies.append(movie)
-    Ratings.append(rating)
-
-Ratings = np.array(Ratings)
-mean = np.mean(Ratings)
-std = np.std(Ratings)
-print('Rating mean:', mean)
-print('Rating std:', std)
 
 Users, Movies = [], []
 for user, movie in testData:
@@ -36,9 +17,12 @@ for user, movie in testData:
 Users = np.array(Users)
 Movies = np.array(Movies)
 
+mean = 3.58171208604
+std = 1.11689766115
+
 model = MFModel(max_userid, max_movieid)
-model.load_weights('model_0.5941.h5')
+model.load_weights('models/m64.h5')
 
 y = model.predict([Users, Movies], batch_size=512, verbose=1).flatten()
 y = (y * std) + mean
-savePrediction(y, 'result/prediction.csv')
+savePrediction(y, sys.argv[2])
