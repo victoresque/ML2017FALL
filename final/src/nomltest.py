@@ -4,17 +4,16 @@ import jieba
 import pickle
 from copy import copy
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from opencc import OpenCC
 jieba.set_dictionary('dict/dict.txt.big')
 
-w2v = Word2Vec.load('word2vec/zh.bin')
-
 with open('data/test-v1.1.json', 'r', encoding='utf_8') as f:
     train_data = json.load(f)
 
-peak = 9999999
+peak = 99999
 
 td = []
 for i, data in tqdm(enumerate(train_data['data'])):
@@ -71,6 +70,32 @@ for i in range(20):
     p = ''.join(td[i]['context'])
     q = ''.join(td[i]['question'])
 
-import pandas as pd
-pd.DataFrame([[td[i]['id'], ' '.join([str(i) for i in range(al[i], ar[i])])   ] for i in range(len(al))],
-                 columns=['id', 'answer']).to_csv('result/prediction.csv', index=False)
+aa = []
+for i, t in tqdm(enumerate(td)):
+    if i == peak:
+        break
+    context = list(''.join(t['context']))
+    if al[i] < 0:
+        al[i] = 0
+    if ar[i] > len(context)+1:
+        ar[i] = len(context)+1
+    a = context[al[i]:ar[i]]
+    q = list(''.join(t['question']))
+    for j, ac in enumerate(a):
+        if ac in q:
+            a[j] = -1
+        else:
+            a[j] = al[i] + j
+    a = [j for j in a if j != -1]
+    if not a:
+        a = [0]
+    aa.append(a)
+
+pd.DataFrame([[td[i]['id'], ' '.join([str(j) for j in aa[i]])] for i in range(len(aa))],
+             columns=['id', 'answer']).to_csv('result/prediction.csv', index=False)
+'''
+
+pd.DataFrame([[td[i]['id'], ' '.join([str(i) for i in range(al[i], ar[i])])] for i in range(len(al))],
+             columns=['id', 'answer']).to_csv('result/prediction.csv', index=False)
+
+'''
