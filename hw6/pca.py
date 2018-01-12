@@ -1,24 +1,22 @@
+import os
+import sys
 import numpy as np
 from skimage import io
 
+images_path = sys.argv[1]
+target_name = sys.argv[2]
+
 X = []
-for i in range(415):
-    img = io.imread('data/faces/{}.jpg'.format(i))
+
+filenames = os.listdir(images_path)
+for filename in filenames:
+    img = io.imread(os.path.join(images_path, filename))
     X.append(img.flatten())
 
 X = np.array(X)
 X_mean = np.mean(X, axis=0)
-'''
+
 U, S, V = np.linalg.svd((X - X_mean).T, full_matrices=False)
-np.save('svd.U.npy', U)
-np.save('svd.S.npy', S)
-del U
-'''
-U = np.load('svd.U.npy')
-S = np.load('svd.S.npy')
-print(S)
-for i in range(4):
-    print(S[i] / np.sum(S) * 100, '%')
 
 def image_clip(x):
     x -= np.min(x)
@@ -27,22 +25,15 @@ def image_clip(x):
     x = np.reshape(x, (600, 600, 3))
     return x
 
-ids = [23, 96, 187, 253]
-for id in ids:
-    k = 4
-    w = []
-    y = X[id] - X_mean
-    M = np.zeros(len(y))
-    for i in range(k):
-        eig = U[:, i]
-        w.append(np.dot(y, eig))
-        M += np.dot(y, eig) * eig
-    M += X_mean
-    M = image_clip(M)
-    io.imsave('data/p1/{}.jpg'.format(id), M)
-    io.imsave('data/p1/{}_.jpg'.format(id), np.reshape(X[id], (600, 600, 3)))
+target = io.imread(os.path.join(images_path, target_name))
 
-for i in range(4):
-    io.imsave('data/p1/eig{}.jpg'.format(i), image_clip(-U[:, i]))
+k = 4
+y = target.flatten() - X_mean
+M = np.zeros(len(y))
+for i in range(k):
+    eig = U[:, i]
+    M += np.dot(y, eig) * eig
+M += X_mean
+M = image_clip(M)
 
-io.imsave('data/p1/mean.jpg', image_clip(X_mean))
+io.imsave('reconstruction.jpg', M)
