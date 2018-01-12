@@ -25,7 +25,7 @@ model.summary()
 model.compile(optimizer=Adam(), loss='mse')
 
 callbacks = [ModelCheckpoint('{epoch:02d}_{loss:.4f}_{val_loss:.4f}.h5', period=5)]
-model.fit(image, image, batch_size=128, epochs=100,
+model.fit(image, image, batch_size=128, epochs=50,
           verbose=1, callbacks=callbacks, validation_split=0.1, shuffle=True)
 
 

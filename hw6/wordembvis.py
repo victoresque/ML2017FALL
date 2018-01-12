@@ -1,7 +1,7 @@
 import re
 import numpy as np
 import matplotlib
-matplotlib.rcParams['font.family']=["WenQuanYi Zen Hei"]
+matplotlib.rcParams['font.family']=["WenQuanYi Zen Hei", "I.Ming"]
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = [16, 9]
 from adjustText import adjust_text
@@ -12,8 +12,8 @@ def plot(Xs, Ys, Texts):
     ax.plot(Xs, Ys, 'o')
     texts = [plt.text(X, Y, Text) for X, Y, Text in zip(Xs, Ys, Texts)]
     adjust_text(texts, Xs, Ys,
-                arrowprops=dict(arrowstyle='->', color='red'),
-                autoalign='x')
+                arrowprops=dict(arrowstyle='-', color='k'),
+                force_points=1.1)
     fig.canvas.draw()
     labels = [item.get_text() for item in ax.get_xticklabels()]
     labels = [re.sub('−', '-', i) for i in labels]
@@ -33,6 +33,6 @@ for word in w2v.wv.vocab:
 
 from sklearn.manifold import TSNE
 
-X = TSNE(n_components=2, n_iter=20000, verbose=1).fit_transform(X)
+X = TSNE(n_components=2, n_iter=10000, verbose=1).fit_transform(X)
 
 plot(X[:, 0], X[:, 1], T)

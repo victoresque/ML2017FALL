@@ -28,3 +28,5 @@ model = Word2Vec(lines, size=300, min_count=16, workers=8, iter=20)
 model.save('data/word2vec')
 
 
+
+
