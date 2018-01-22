@@ -2,11 +2,13 @@
 
 ## Run testing
   
-  1. Put **test-v1.1.json** in **src/R-net/data/**
-
-  2. Run src/R-net/test.sh using bash (**bash test.sh**)
+  1. cd src/R-net
   
-  3. The result will be **src/R-net/prediction.csv**
+  2. Put **test-v1.1.json** in **data/**
+
+  3. Run test.sh using bash (**bash test.sh**)
+  
+  4. The result will be **prediction.csv**
 
 ## Requirements
 
