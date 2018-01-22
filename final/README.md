@@ -24,5 +24,5 @@
 
   tqdm 4.19.4
 
-
+  tensorboard-logger 0.0.4
   
