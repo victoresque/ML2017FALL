@@ -2,7 +2,7 @@
 
 ## Run testing
   
-  1. cd src/R-net
+  1. **cd src/R-net**
   
   2. Put **test-v1.1.json** in **data/**
 
