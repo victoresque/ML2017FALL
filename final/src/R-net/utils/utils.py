@@ -375,6 +375,8 @@ def sort_idx(seq):
 
 
 def prepare_data():
+    pass
+    '''
     make_dirs("data/cache")
     make_dirs("data/embedding/char")
     make_dirs("data/embedding/word")
@@ -398,3 +400,4 @@ def prepare_data():
     char_embedding_pretrain_url = "https://raw.githubusercontent.com/minimaxir/char-embeddings/master/glove.840B.300d-char.txt"
     char_embedding_filename = "glove_char.840B.300d.txt"
     maybe_download(char_embedding_pretrain_url, "data/embedding/char", char_embedding_filename)
+    '''
