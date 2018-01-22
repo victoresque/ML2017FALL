@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
-from opencc import OpenCC
 jieba.set_dictionary('dict/dict.txt.big')
 
 with open('data/test-v1.1.json', 'r', encoding='utf_8') as f:
