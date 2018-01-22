@@ -29,6 +29,7 @@ class Tester(object):
 
         # for validate
         expected_version = "1.1"
+        '''
         with open(args.dev_json) as dataset_file:
             dataset_json = json.load(dataset_file)
             if dataset_json['version'] != expected_version:
@@ -36,7 +37,7 @@ class Tester(object):
                       ', but got dataset with v-' + dataset_json['version'],
                       file=sys.stderr)
             self.dev_dataset = dataset_json['data']
-
+        '''
         self.dataloader_test = dataloader_test
 
         self.model = RNet.Model(args, char_embedding_config, word_embedding_config, sentence_encoding_config,
