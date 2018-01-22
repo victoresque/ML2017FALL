@@ -2,7 +2,7 @@
 
 ## Run testing
   
-  First put test-v1.1.json in src/R-net/data/
+  First, put test-v1.1.json in src/R-net/data/
 
   Then run src/R-net/test.sh, the result will be src/R-net/prediction.csv
 
