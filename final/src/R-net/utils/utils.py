@@ -36,7 +36,7 @@ def get_args():
     parser.add_argument('--checkpoint_path', type=str, default="checkpoint")
     parser.add_argument('--resume', type=str, default=None)
     parser.add_argument('--train_json', type=str, default="./data/train-v1.1.json")
-    parser.add_argument('--dev_json', type=str, default="./data/train-v1.1.json")
+    parser.add_argument('--dev_json', type=str, default="./data/train-v1.1-val.json")
     parser.add_argument('--test_json', type=str, default="./data/test-v1.1.json")
     parser.add_argument('--update_word_embedding', type=bool, default=False)
     parser.add_argument('--update_char_embedding', type=bool, default=True)
