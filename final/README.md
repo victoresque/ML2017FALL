@@ -2,7 +2,7 @@
 
 ## Run testing
   
-  1. Put test-v1.1.json in src/R-net/data/**
+  1. Put test-v1.1.json in src/R-net/data/
 
   2. Run src/R-net/test.sh
   
