@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from collections import Counter
 from os.path import dirname, abspath
 
-import nltk
+# import nltk
 import six
 import torch
 from six.moves.urllib.request import urlretrieve
@@ -220,14 +220,14 @@ def read_train_json(path, debug_mode, debug_len, delete_long_context=True, delet
         for p in topic['paragraphs']:
             qas = p['qas']
             passage = p['context']
-            if delete_long_context and len(nltk.word_tokenize(passage)) > longest_context:
-                continue
+            # if delete_long_context and len(nltk.word_tokenize(passage)) > longest_context:
+            #     continue
             for qa in qas:
                 question = qa["question"]
                 answers = qa["answers"]
 
-                if delete_long_question and len(nltk.word_tokenize(question)) > longest_question:
-                    continue
+                # if delete_long_question and len(nltk.word_tokenize(question)) > longest_question:
+                #     continue
 
                 question_id = qa["id"]
                 for ans in answers:
@@ -382,7 +382,7 @@ def prepare_data():
     make_dirs("data/trained_model")
     make_dirs("checkpoint")
 
-    nltk.download("punkt")
+    # nltk.download("punkt")
 
     train_filename = "train-v1.1.json"
     dev_filename = "dev-v1.1.json"

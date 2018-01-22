@@ -1,13 +1,13 @@
 from functools import partial
-
-import nltk
-import spacy
+import jieba
 import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
 from utils.utils import read_train_json, read_dev_json, tokenized_by_answer, sort_idx
+
+jieba.set_dictionary('data/dict.txt.big')
 
 
 def padding(seqs, pad, batch_first=False):
@@ -148,12 +148,10 @@ class SQuAD(Dataset):
         :param tokenizer: tokenization method
         :return: None
         """
-        import jieba
-        jieba.set_dictionary('data/dict.txt.big')
-        def spacy_tokenizer(seq):
+        def jieba_tokenizer(seq):
             return [w for w in jieba.cut(seq)]
 
-        self.tokenizer = spacy_tokenizer
+        self.tokenizer = jieba_tokenizer
 
     def _create_collate_fn(self, batch_first=True):
 
