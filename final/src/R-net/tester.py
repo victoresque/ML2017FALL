@@ -83,7 +83,7 @@ class Tester(object):
 
     def test(self):
         self.model.eval()
-        checkpoint = torch.load('checkpoint/r-net_Jan-20_12-17/model_best.pth.tar')
+        checkpoint = torch.load('checkpoint/model_best.pth.tar')
         self.start_epoch = checkpoint['epoch']
         self.best_f1 = checkpoint['best_f1']
         self.name = checkpoint['name']
