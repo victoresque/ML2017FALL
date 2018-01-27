@@ -29,6 +29,8 @@ Machine Learning (2017, Fall) @ National Taiwan University
   https://grouplens.org/datasets/movielens/100k/
 
 ## HW6 (PCA, word embedding, t-SNE, autoencoder, clustering)
+There are three separate parts:
+
   1. Implementing eigenface using SVD
 
   2. Chinese word embedding visualization (word2vec, t-SNE)
